@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
 
-function App() {
+import axios from "axios";
+
+import "./App.css";
+
+export default function App() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [images, setImages] = useState([]);
+
+  const getImages = async () => {
+    const results = await axios.get(
+      `https://pixabay.com/api/?key=${process.env.REACT_APP_API_KEY}&per_page=5&q=${searchTerm}`
+    );
+
+    console.log(results.data.hits);
+
+    setImages(results.data.hits);
+  };
+
+  useEffect(() => {
+    getImages();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input onChange={(e) => setSearchTerm(e.target.value)}></input>
+      <button onClick={() => getImages()}>Get</button>
+      {images.map((img) => (
+        <img src={img.previewURL}></img>
+      ))}
     </div>
   );
 }
-
-export default App;
